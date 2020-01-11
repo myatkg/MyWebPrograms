@@ -1,0 +1,25 @@
+<% include partials/header %>
+
+
+
+<div class="container-fluid">
+    <header class="jumbotron text-center">
+        <h1 >Welcome to Camp Ground</h1>
+        <p>View The World's Most Astonishing Animals on Our Camp</p>
+        <a class="btn btn-dark btn-lg" role="button" href="/">Home</a>
+        <a class="btn btn-primary btn-lg" role="button" href="/camp/new">Add New Camp</a>
+    </header>
+    
+    <div class="row">
+        <% campdata.forEach(function(camp){ %>
+            <div class="col-md-4 col-sm-6">
+                <figure class = "figure border border-secondary rounded">
+                    <img class = "figure-img img-fluid" src="<%= camp["image"] %>">
+                    <figcaption class="caption text-center text-uppercase font-weight-bold"><%= camp["name"]%></figcaption>
+                    <a href="/camp/:id" role="button" class = "btn btn-outline-primary btn-md">More</a>
+                </figure>
+            </div>
+        <% }) %>
+    </div>
+</div>
+<% include partials/footer %>

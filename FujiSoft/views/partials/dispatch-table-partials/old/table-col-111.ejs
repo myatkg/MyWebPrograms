@@ -1,0 +1,40 @@
+<td id="nestedtable">
+	<table class="table text-center">
+		<tbody>
+			<tr>
+				<th class="text-center" colspan="4" id="genba" >SAGA BANK IN THE MIDDLE OF DESERT WITH OASIS BUT IT TOO HOT TO DO ANY CONSTRUCTION!!!</th>
+			</tr>
+			<!--Looping for rows inside each column-->
+			<%var count=1;%>
+			<tr id="item-row">
+				<td colspan="3"><!-- Add Items here -->
+					<%=data[2].product_name%>
+				</td>
+				<td><!-- Add qty of Items -->
+					<%=data[2].qty%>
+				</td>
+			</tr>
+			<% for(var c=0; c<6-count; c++){%>
+				<tr id="item-row">
+					<td colspan="3">
+					</td>
+					<td>
+					</td>
+				</tr>
+			<% }%>
+			<!--Loop Ends-->
+			<tr id="LIDD">
+    			<td>Loads</td>
+						<td>Inspect</td>
+						<td>Dispatch</td>
+						<td>Deliver</td>
+			</tr>
+    		<tr>
+				<td id="time">9:00</td>
+				<td id="time">9:30</td>
+				<td id="time">10:00</td>
+				<td id="time">10:30</td>
+			</tr>
+		</tbody>
+	</table>
+</td>

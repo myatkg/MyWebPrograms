@@ -1,0 +1,17 @@
+<tbody>
+	<% for(var i=0;i<data[0].length;i++){ %>
+		<tr>
+			<th scope="row" class="text-center" id="truckHeader" ><%=data[0].truck_company%></th>
+			<!--loop for 5 columns-->
+			<% for(var j=0; j<5; j++){ %>
+				<% if(data[1].length<2 && data[2].length<2){%>
+					<% include table-col-111 %> <!--one company one truck one product-->
+				<% } else if (data[1].length<2 data[2].length>1){%>
+					<% include table-col-11m %> <!--one company one truck many product-->
+				<% } else if (data[1].length>1 data[2].length>1){%>
+					<% include table-col-1m %> <!--one company many trucks which makes multiple elements in product array-->
+				<% } %>
+			<% } %>
+		</tr>
+	<% } %>
+</tbody>

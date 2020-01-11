@@ -1,0 +1,42 @@
+    <!-- Special version of Bootstrap that only affects content wrapped in .bootstrap-iso -->
+	<link rel="stylesheet" href="\stylesheets\bootstrap-iso.css" /> 
+	<!-- Include Date Range Picker -->
+	<link rel="stylesheet" href="\stylesheets\bootstrap-datepicker3.css"/>
+	
+	<!-- Calender starts Here! HTML Form (wrapped in a .bootstrap-iso div) -->
+		<div class="bootstrap-iso table-resposive">
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-xs-5">
+		    			<form action="/dispatch" method="GET" id="calendar-form">
+		    				<div class="form-group">
+		    					<div class="input-group">
+		    						<div class="input-group-addon">
+		    							<i class="far fa-calendar-alt"></i>
+		       						</div>		       						
+		       						<input class="form-control" id="date" name="date" placeholder="月/日/年" type="text" value=<%=formDate%>>
+		       						<span class="input-group-btn">
+		       							<button class="btn btn-outline-success">Go</button>
+		       						</span>
+		      					</div>	      					
+		     				</div>
+		    			</form>
+		  			</div>
+		  			<form class="right" action="/dispatch/add" method="GET">
+						<div class="btn-group " role="group">
+							<button class="btn btn-outline-primary">Add</button>
+							<button class="btn btn-outline-primary" type="submit" formaction="/dispatch/edit" name='date' value=<%=formDate%>>Edit</button>
+							<button class="btn btn-outline-primary" type="submit" formaction="/dispatch/edit" formmethod='POST'>Update</button>
+						</div>
+					</form>
+		  		</div>
+		 	</div>
+		</div> <!-- Calendar Ends Here -->
+	<!-- Include jQuery -->
+	<% include jquery %>
+	
+	<script type="text/javascript" src="\js\bootstrap-datepicker\bootstrap-datepicker.js"></script>
+	<script type="text/javascript" src="\js\bootstrap-datepicker\bootstrap-datepicker.ja.js" charset="UTF-8"></script>
+
+	<!-- Extra JavaScript for DatePicker added manually -->
+	<script type="text/javascript" src="\js\datepicker_script.js"></script>

@@ -1,0 +1,48 @@
+<td id="nestedtable">
+	<table class="table table-striped text-center">
+		<tbody>
+			<tr>
+				<!--add genba and LIDD in data[1] as specific truck_no will go to only one genba-->
+				<input class="text-center edit-form"  rows="5" id="genba" type="text" name="genba" value="<%= data[2][1].product_name %>">
+			</tr>
+			<!--Looping for rows inside each column, k serves as list of product-->
+			<%var count=0;%>
+			<% for(var k=0;k<data[2].length;k++){ %>
+				<%if(data[2][k].truck_company==data[0][i].truck_company && data[2][k].truck_no==j+1) {%>
+					<tr id="item-row">
+						<td class="align-middle" colspan="3"><!-- Add Items here -->
+							<input class="edit-form" type="text" name="prd" value="<%=data[2][k].product_name%>" >
+						</td>
+						<td class="align-middle" colspan="1"><!-- Add qty of Items -->
+							<input class="edit-form text-center" type="text" name="qty" value="<%=data[2][k].qty%>" >
+						</td>
+					</tr>
+					<%count++;%>
+				<% } %>
+			<% } %>
+			<% for(var c=0; c<6-count; c++){%>
+				<tr id="item-row">
+					<td class="align-middle" colspan="3">
+						<input class="edit-form" type="text" name="product_ex">
+					</td>
+					<td class="align-middle">
+						<input class="edit-form" type="text" name="qty_ex">
+					</td>
+				</tr>
+			<% }%>
+			<!--Loop Ends-->
+			<tr id="LIDD">
+    			<td class="align-middle">Loads</td>
+    			<td class="align-middle">Inspect</td>
+				<td class="align-middle">Dispatch</td>
+				<td class="align-middle">Deliver</td>
+			</tr>
+    		<tr>
+				<td class="align-middle" id="time">9:00</td>
+				<td class="align-middle" id="time">9:30</td>
+				<td class="align-middle" id="time">10:00</td>
+				<td class="align-middle" id="time">10:30</td>
+			</tr>
+		</tbody>
+	</table>
+</td>

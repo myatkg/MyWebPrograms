@@ -1,0 +1,21 @@
+<tbody>
+	<% for(var i=0;i<data[0].length;i++){ %>
+		<thead>
+			<tr>
+				<th class="text-center" scope="col" id="truckNo">TruckNo.</th>
+				<th class="text-center" scope="col">1</th>
+				<th class="text-center" scope="col">2</th>
+				<th class="text-center" scope="col">3</th>
+				<th class="text-center" scope="col">4</th>
+				<th class="text-center" scope="col">5</th>
+			</tr>
+		</thead>
+		<tr>
+			<th scope="row" class="text-center" id="truckHeader" ><%=data[0][i].truck_company%></th>
+			<!--loop for 5 columns, j serve as truck_no-->
+			<% for(var j=0; j<data[1][i].truck_no; j++){ %>
+				<% include table-col-edit %>
+			<% } %>
+		</tr>
+	<% } %>
+</tbody>
