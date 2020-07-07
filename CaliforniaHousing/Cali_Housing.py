@@ -40,7 +40,7 @@ plt.title('Housing Prices Scatterplot')
 plt.legend()
 
 import matplotlib.image as mpimg
-california_img=mpimg.imread('california_gmap.png')
+california_img=mpimg.imread('california.png')
 ax = housing.plot(kind="scatter", x="longitude", y="latitude", figsize=(10,7),
                        s=housing['population']/100, label="Population",
                        c="median_house_value", cmap=plt.get_cmap("jet"),
@@ -109,7 +109,7 @@ plt.show()
 
 housing["income_cat"] = pd.cut(housing["median_income"],
                                bins=[0., 1.5, 3.0, 4.5, 6., np.inf],
-                               labels=['0-1.5', '1.5-3', '3-4.5', '4.5-6', '>6'])
+                               labels=['0-1.5', '1.5-3', '3-4.5', '4.5-6', '>6'])#1, 2, 3, 4, 5 
 
 housing["income_cat"].value_counts()
 housing["income_cat"].hist()
@@ -195,7 +195,8 @@ for set_ in (stratified_train_set, stratified_test_set):
      set_.drop("income_cat", axis=1, inplace=True)
 
 stratified_housing = stratified_train_set.drop("median_house_value", axis=1)
-housing_target = stratified_train_set.copy()
+housing_target = stratified_train_set["median_house_value"].values
+#housing_target = np.array(housing_target)
 
 #Let's split new_housing into number value only as new_housing_num and categorical value only as new_housing_cat
 
@@ -235,8 +236,6 @@ number_pipeline = Pipeline([
                                 ('std_scaler', StandardScaler())
                           ])
 
-stratified_housing_num_tr = number_pipeline.fit_transform(stratified_housing_num)
-
 num_attribs = list(stratified_housing_num)
 cat_attribs = ["ocean_proximity"]
 
@@ -246,6 +245,7 @@ full_pipeline = ColumnTransformer([
                                 ])
 
 housing_prepared = full_pipeline.fit_transform(stratified_housing)
+#housing_target = number_pipeline.fit_transform(housing_target.reshape(-1, 1)).ravel()
 
 from sklearn.linear_model import LinearRegression
 from sklearn.tree import DecisionTreeRegressor
@@ -260,31 +260,71 @@ models.append(('(SVR)', SVR()))
 
 from sklearn.model_selection import cross_validate
 for name, model in models:
-    split = StratifiedShuffleSplit(n_splits=10, test_size=0.2, random_state=42)
-    cv_res = cross_validate(model, housing_prepared, housing_target, scoring = ['neg_root_mean_squared_error', 'r2'], cv = split)
-    print('RMSE : ',"{:.3f}".format(-cv_res['test_neg_root_mean_squared_error'].mean()), ', ', 
+    cv_res = cross_validate(model, housing_prepared, housing_target, scoring = ['neg_mean_absolute_error', 'neg_root_mean_squared_error', 'r2'], cv = 10)
+    print('MAE : ',"{:.3f}".format(-cv_res['test_neg_mean_absolute_error'].mean()), ', '
+          'RMSE : ',"{:.3f}".format(-cv_res['test_neg_root_mean_squared_error'].mean()), ', ', 
           'R2 : ', "{:.3f}".format(cv_res['test_r2'].mean()),  name)
 
+#Fine-Tuning Model/////////////////////////////////////////////////////////////////////////////////////////////
+    
+
+from sklearn.model_selection import GridSearchCV
+
+param_grid = [
+
+                {'n_estimators': [30, 50, 100], 'max_features': [6, 8, 10, 12], 'n_jobs': [-1]},
+
+                {'bootstrap': [False], 'n_estimators': [3, 10], 'max_features': [2, 3, 4]},
+            ]
+
+forest_reg = RandomForestRegressor(random_state=42)
+grid_search = GridSearchCV(forest_reg, param_grid, cv=5,
+                           scoring='neg_mean_squared_error', return_train_score=True)
+
+grid_search.fit(housing_prepared, housing_target)
+
+grid_search.best_params_
+grid_search.best_estimator_
+
+final_model = grid_search.best_estimator_
+
+X_test = stratified_test_set.drop("median_house_value", axis=1)
+y_test = stratified_test_set["median_house_value"].copy()
+
+X_test_prepared = full_pipeline.transform(X_test)
+final_predictions = final_model.predict(X_test_prepared)
+
+from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
+final_mse = mean_squared_error(y_test, final_predictions)
+final_rmse = np.sqrt(final_mse)
+final_r2 = r2_score(y_test, final_predictions)
+final_MAE = mean_absolute_error(y_test, final_predictions)
+print("Final MAE : ", final_MAE, "Final RMSE : ", final_rmse, ", Final R2 : ", final_r2 )
+
+feature_importances = grid_search.best_estimator_.feature_importances_
+
+cat_encoder = full_pipeline.named_transformers_["cat"]
+cat_one_hot_attribs = list(cat_encoder.categories_[0])
+attributes = num_attribs+cat_one_hot_attribs
+sorted(zip(feature_importances, attributes), reverse=True)
 
 
+#//////////////////////////////////////////////////////////////////////////////////
 
+lin_X = pd.DataFrame(housing_prepared).drop(8, axis =1).values
+lin_X_test_prepared = pd.DataFrame(X_test_prepared).drop(8, axis =1).values
 
+lin_reg = LinearRegression()
+lin_reg.fit(lin_X, housing_target)
+# Predicting the Test set results
+y_pred = lin_reg.predict(lin_X_test_prepared)
 
+lin_final_mse = mean_squared_error(y_test, y_pred)
+lin_final_rmse = np.sqrt(final_mse)
+lin_final_r2 = r2_score(y_test, y_pred)
+lin_final_MAE = mean_absolute_error(y_test, y_pred)
+print("Final MAE : ", lin_final_MAE, "Final RMSE : ", lin_final_rmse, ", Final R2 : ", lin_final_r2 )
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#Result: Final MAE :  49768.005311099565 Final RMSE :  46452.184903789996 , Final R2 :  0.6519743118997776
 
 
