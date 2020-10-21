@@ -40,14 +40,55 @@
                 </div>
             </base-card>
         </section>
+        <section>
+            <base-card>
+                <input id=myFileInput type="file">    
+                <button @click="getByteArray">Try it</button>
+                <span id="file">{{byteArrays}}</span>
+            </base-card>
+        </section>
     </div>
 </template>
 
 <script>
 export default {
-    props: ['id'],
+    props: ['id'],//
 
      methods: {
+         async  getByteArray() {
+    //Get file from your input element
+    let myFile = document.getElementById('myFileInput').files[0];
+
+    //Wait for the file to be converted to a byteArray
+    let byteArray = await new Promise((resolve, reject) => {
+                try {
+                    let reader = new FileReader();
+                    let fileByteArray = [];
+                    reader.readAsArrayBuffer(myFile);
+                    console.log("reader is reading")
+                    reader.onloadend = (evt) => {
+                        if (evt.target.readyState == FileReader.DONE) {
+                            let arrayBuffer = evt.target.result,
+                                array = new Uint8Array(arrayBuffer);
+                            for (let i = 0; i < array.length; i++) {
+                                fileByteArray.push(array[i]);
+                            }
+                            console.log("looping finished")
+                        }
+                        resolve(fileByteArray);
+                    }
+                }
+                catch (e) {
+                    reject(e);
+                } 
+            })
+    //Do something with the byteArray
+    console.log(byteArray);
+},
+
+
+
+
     updatePaused(event) {
         this.videoElement = event.target;
       /* this.videoElement1 = event.target;
