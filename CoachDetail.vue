@@ -34,9 +34,14 @@
                     <p>Sorry, there's a problem playing this video. Please try using a different browser.</p>
                 </video>
 
-                <div class="controls">
-                    <button v-show="paused" @click="play">&#9654;</button>
-                    <button v-show="playing" @click="pause">&#9208;</button>
+                <div>
+                    <div class="controls">
+                        <button v-show="paused" @click="play">&#9654;</button>
+                        <button v-show="playing" @click="pause">&#9208;</button>
+                        <button @click="forwardTenSec">Forward10</button>
+                        <button @click="rewindTenSec">Rewind10</button>
+                        <button @click="resetTimeline">reset</button>
+                    </div>
                 </div>
             </base-card>
         </section>
@@ -91,26 +96,58 @@ export default {
 
     updatePaused(event) {
         this.videoElement = event.target;
-      /* this.videoElement1 = event.target;
-      this.videoElement2 = event.target; */
-      this.paused = event.target.paused;
+        this.paused = event.target.paused;
+    },
+    resetTimeline() {
+        this.setZero = false;
+        this.lastSeconds = 0
+        this.play();
+    },
+    forwardTenSec() {
+        let videoElements = this.$el.querySelectorAll('video')
+        this.lastSeconds =videoElements[0].currentTime+10;
+        console.log(this.lastSeconds)
+        this.play();
+    },
+    rewindTenSec() {
+        let videoElements = this.$el.querySelectorAll('video')
+        this.lastSeconds =videoElements[0].currentTime-10;
+        console.log(this.lastSeconds)
+        this.play();
     },
     play() {
         let videoElements = this.$el.querySelectorAll('video')
-        console.log(videoElements[0].currentTime)
+        let userTime = this.userSeconds()
+        //console.log(userTime)
             for (let i = 0; i < videoElements.length; i++) {
-                videoElements[0].currentTime=50;
-                videoElements[i].play()
+                videoElements[i].currentTime=(userTime[i]+this.lastSeconds);
+                videoElements[i].play();
+                this.setZero = true;
             }
-            /* this.videoElement1.play();
-            this.videoElement2.play(); */
     },
     pause() {
             let videoElements = this.$el.querySelectorAll('video')
-  for (let i = 0; i < videoElements.length; i++) {
-    videoElements[i].pause()
-  }
-      
+            for (let i = 0; i < videoElements.length; i++) {
+                this.lastSeconds = this.updateTime(videoElements[i].currentTime)
+                videoElements[i].pause();
+                console.log(this.lastSeconds)
+            }     
+    },
+    userSeconds() {
+        if(!this.setZero) {
+            var hms = ["00:00:10","00:00:10"]
+            var a
+            var seconds = []
+            for(let i = 0; i < hms.length; i++) {
+                a = hms[i].split(":");
+                seconds[i] = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]); 
+            }
+            return seconds;
+            //console.log(seconds)
+        }else return seconds = [0, 0];
+    },
+    updateTime(seconds) {
+        return this.lastSeconds = seconds
     }
   },
     computed: {
@@ -136,6 +173,8 @@ export default {
         return {
             selectedCoach: null,
             videoElement: null,
+            lastSeconds: 0,
+            setZero: false,
             /* videoElement1: null,
             videoElement2: null, */
             paused: null
